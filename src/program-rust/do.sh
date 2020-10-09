@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")"
 
 usage() {
     cat <<EOF
 
-Usage: do.sh rust_project_directory action 
+Usage: do.sh action
 
 Supported actions:
-    build <name_of_project> <rename_so_path>
+    build
     clean
     test
     clippy
@@ -16,46 +17,25 @@ Supported actions:
 EOF
 }
 
-if [ -z "$1" ]; then
-    usage
-    exit
-fi
-
-cd "$(dirname $0)/$1"
-
 sdkDir=../../node_modules/@solana/web3.js/bpf-sdk
-targetDir=../target
+targetDir="$PWD"/target
 profile=bpfel-unknown-unknown/release
 
 perform_action() {
     set -e
-    case "$2" in
+    case "$1" in
     build)
         "$sdkDir"/rust/build.sh "$PWD"
         
         so_path="$targetDir/$profile"
-
-        if [ -z "$3" ]; then
-            usage
-            exit
-        fi
-
-        so_name="$3"
-
-        if [ -z "$4" ]; then
-            usage
-            exit
-        fi
-
-        dest="$4"
-
+        so_name="solana_bpf_helloworld"
         if [ -f "$so_path/${so_name}.so" ]; then
             cp "$so_path/${so_name}.so" "$so_path/${so_name}_debug.so"
             "$sdkDir"/dependencies/llvm-native/bin/llvm-objcopy --strip-all "$so_path/${so_name}.so" "$so_path/$so_name.so"
         fi
 
         mkdir -p ../../dist/program
-        cp "$so_path/${so_name}.so" "$dest"
+        cp "$so_path/${so_name}.so" ../../dist/program/helloworld.so
         ;;
     clean)
         "$sdkDir"/rust/clean.sh "$PWD"
@@ -81,14 +61,8 @@ perform_action() {
             pwd
             "$0" build
 
-            if [ -z "$2" ]; then
-                usage
-                exit
-            fi
-
-            so_name="$2"
-
             so_path="$targetDir/$profile"
+            so_name="solana_bpf_helloworld"
             so="$so_path/${so_name}_debug.so"
             dump="$so_path/${so_name}-dump"
 
