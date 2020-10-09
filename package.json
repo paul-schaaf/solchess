@@ -1,11 +1,7 @@
 {
-  "name": "helloworld",
+  "name": "solchess",
   "version": "0.0.1",
   "description": "",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/solana-labs/example-helloworld"
-  },
   "keywords": [],
   "author": "",
   "license": "MIT",
@@ -20,7 +16,7 @@
     "bpf-sdk:update": "solana-bpf-sdk-install node_modules/@solana/web3.js && npm run clean",
     "clean": "npm run clean:program-rust",
     "clean:store": "rm -rf store",
-    "build:program-rust": "./src/program-rust/do.sh build && npm run clean:store",
+    "build": "./src/program-rust/do.sh build && npm run clean:store",
     "clean:program-rust": "./src/program-rust/do.sh clean && rm -rf ./dist && npm run clean:store",
     "test:program-rust": "./src/program-rust/do.sh test",
     "cluster:localnet": "npm run clean:store && rm -f .env",

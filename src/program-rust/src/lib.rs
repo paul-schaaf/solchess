@@ -11,16 +11,18 @@ use solana_sdk::{
 };
 use std::mem;
 
+use legal_chess::{game::Game, chessmove::ChessMove};
+
 // Declare and export the program's entrypoint
 entrypoint_deprecated!(process_instruction);
 
 // Program entrypoint's implementation
 fn process_instruction(
-    program_id: &Pubkey, // Public key of the account the hello world program was loaded into
-    accounts: &[AccountInfo], // The account to say hello to
-    _instruction_data: &[u8], // Ignored, all helloworld instructions are hellos
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    _instruction_data: &[u8],
 ) -> ProgramResult {
-    info!("Helloworld Rust program entrypoint");
+    info!("Solchess Rust program entrypoint");
 
     // Iterating accounts is safer then indexing
     let accounts_iter = &mut accounts.iter();
@@ -40,11 +42,24 @@ fn process_instruction(
         return Err(ProgramError::InvalidAccountData);
     }
 
-    // Increment and store the number of times the account has been greeted
-    let mut data = account.try_borrow_mut_data()?;
-    let mut num_greets = LittleEndian::read_u32(&data);
-    num_greets += 1;
+    
+
+    let mut game = Game::new();
+    game.make_move(ChessMove{from: (5,2), to: (5,4), promotion: None});
+
+        // Increment and store the number of times the account has been greeted
+        let mut data = account.try_borrow_mut_data()?;
+        let mut num_greets = LittleEndian::read_u32(&data);
+    if game.legal_moves().len() == 20 {
+        num_greets = 8;
+    } else {
+        num_greets = 4;
+    }
+
     LittleEndian::write_u32(&mut data[0..], num_greets);
+
+
+
 
     info!("Hello!");
 
