@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "description": "Chess game on Solana",
   "main": "index.js",
+  "testnetDefaultChannel": "v1.3.15",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "localnet:update": "solana-localnet update",
+    "localnet:up": "set -x; solana-localnet down; set -e; solana-localnet up",
+    "localnet:down": "solana-localnet down",
+    "localnet:logs": "solana-localnet logs -f"
   },
   "repository": {
     "type": "git",
@@ -15,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/paul-schaaf/solchess/issues"
   },
-  "homepage": "https://github.com/paul-schaaf/solchess#readme"
+  "homepage": "https://github.com/paul-schaaf/solchess#readme",
+  "dependencies": {
+    "@solana/web3.js": "^0.79.0"
+  }
 }
