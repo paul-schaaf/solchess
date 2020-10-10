@@ -1,5 +1,14 @@
 #![cfg(feature = "program")]
 
+#[macro_use]
+extern crate num_derive;
+use num_traits::FromPrimitive;
+
+mod command;
+mod game_acc_state;
+
+use command::Command;
+
 use solana_sdk::{
     account_info::{next_account_info, AccountInfo},
     entrypoint_deprecated,

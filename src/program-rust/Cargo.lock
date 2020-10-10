@@ -1451,6 +1451,8 @@ name = "solchess"
 version = "0.0.1"
 dependencies = [
  "legal_chess",
+ "num-derive",
+ "num-traits",
  "solana-sdk",
 ]
 
