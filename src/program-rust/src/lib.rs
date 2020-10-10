@@ -1,6 +1,5 @@
 #![cfg(feature = "program")]
 
-use byteorder::{ByteOrder, LittleEndian};
 use solana_sdk::{
     account_info::{next_account_info, AccountInfo},
     entrypoint_deprecated,
@@ -11,7 +10,7 @@ use solana_sdk::{
 };
 use std::mem;
 
-use legal_chess::{game::Game, chessmove::ChessMove};
+use legal_chess::{chessmove::ChessMove, game::Game};
 
 // Declare and export the program's entrypoint
 entrypoint_deprecated!(process_instruction);
@@ -22,7 +21,7 @@ fn process_instruction(
     accounts: &[AccountInfo],
     _instruction_data: &[u8],
 ) -> ProgramResult {
-    info!("Solchess Rust program entrypoint");
+    info!("Solchess Entrypoint");
 
     // Iterating accounts is safer then indexing
     let accounts_iter = &mut accounts.iter();
@@ -42,24 +41,21 @@ fn process_instruction(
         return Err(ProgramError::InvalidAccountData);
     }
 
-    
-
     let mut game = Game::new();
-    game.make_move(ChessMove{from: (5,2), to: (5,4), promotion: None});
+    game.make_move(ChessMove {
+        from: (5, 2),
+        to: (5, 4),
+        promotion: None,
+    });
 
-        // Increment and store the number of times the account has been greeted
-        let mut data = account.try_borrow_mut_data()?;
-        let mut num_greets = LittleEndian::read_u32(&data);
-    if game.legal_moves().len() == 20 {
-        num_greets = 8;
-    } else {
-        num_greets = 4;
+    let game_arr = game.to_game_arr();
+
+    // Increment and store the number of times the account has been greeted
+    let mut data = account.try_borrow_mut_data()?;
+
+    for x in 0..game_arr.len() {
+        data[x] = game_arr[x];
     }
-
-    LittleEndian::write_u32(&mut data[0..], num_greets);
-
-
-
 
     info!("Hello!");
 

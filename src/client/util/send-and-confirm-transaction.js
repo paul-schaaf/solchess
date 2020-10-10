@@ -1,23 +1,18 @@
-// @flow
+import { sendAndConfirmTransaction as realSendAndConfirmTransaction } from "@solana/web3.js";
+import YAML from "json-to-pretty-yaml";
 
-import {sendAndConfirmTransaction as realSendAndConfirmTransaction} from '@solana/web3.js';
-import type {Account, Connection, Transaction} from '@solana/web3.js';
-import YAML from 'json-to-pretty-yaml';
+let notify = () => undefined;
 
-type TransactionNotification = (string, string) => void;
-
-let notify: TransactionNotification = () => undefined;
-
-export function onTransaction(callback: TransactionNotification) {
+export function onTransaction(callback) {
   notify = callback;
 }
 
 export async function sendAndConfirmTransaction(
-  title: string,
-  connection: Connection,
-  transaction: Transaction,
-  ...signers: Array<Account>
-): Promise<void> {
+  title,
+  connection,
+  transaction,
+  ...signers
+) {
   const when = Date.now();
 
   const signature = await realSendAndConfirmTransaction(
@@ -26,22 +21,22 @@ export async function sendAndConfirmTransaction(
     signers,
     {
       skipPreflight: true,
-      commitment: 'recent',
+      commitment: "recent",
       preflightCommitment: null,
-    },
+    }
   );
 
   const body = {
     time: new Date(when).toString(),
     signature,
-    instructions: transaction.instructions.map(i => {
+    instructions: transaction.instructions.map((i) => {
       return {
-        keys: i.keys.map(keyObj => keyObj.pubkey.toBase58()),
+        keys: i.keys.map((keyObj) => keyObj.pubkey.toBase58()),
         programId: i.programId.toBase58(),
-        data: '0x' + i.data.toString('hex'),
+        data: "0x" + i.data.toString("hex"),
       };
     }),
   };
 
-  notify(title, YAML.stringify(body).replace(/"/g, ''));
+  notify(title, YAML.stringify(body).replace(/"/g, ""));
 }

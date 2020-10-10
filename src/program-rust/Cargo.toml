@@ -18,9 +18,8 @@ program = ["solana-sdk/program"]
 default = ["solana-sdk/default"]
 
 [dependencies]
-byteorder = "1.3"
 solana-sdk = { version = "=1.3.9", default-features = false, optional = true }
-legal_chess = "0.2.0"
+legal_chess = "0.3.1"
 
 [lib]
 name = "solchess"

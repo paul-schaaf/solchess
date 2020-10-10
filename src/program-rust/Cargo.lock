@@ -719,9 +719,9 @@ dependencies = [
 
 [[package]]
 name = "legal_chess"
-version = "0.2.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f292274af30f28d6fe297fc8c454439930e50014dc0ef6a175c925f92c9b4bb"
+checksum = "4f496ecb255178b17eadb5ccb02a7013af120cba7c071b4cb319c69c604e96cd"
 
 [[package]]
 name = "libc"
@@ -1450,7 +1450,6 @@ dependencies = [
 name = "solchess"
 version = "0.0.1"
 dependencies = [
- "byteorder",
  "legal_chess",
  "solana-sdk",
 ]
