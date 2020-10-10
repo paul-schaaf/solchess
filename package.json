@@ -8,6 +8,8 @@
   "testnetDefaultChannel": "v1.3.15",
   "scripts": {
     "start": "babel-node src/client/main.js",
+    "deploy": "babel-node src/client/deploy.js",
+    "clean:deploy": "rm store/deploy.json",
     "lint": "npm run pretty && eslint .",
     "lint:fix": "npm run lint -- --fix",
     "lint:watch": "watch 'npm run lint:fix' . --wait=1",
@@ -15,7 +17,6 @@
     "flow:watch": "watch 'flow' . --wait=1 --ignoreDirectoryPattern=/doc/",
     "bpf-sdk:update": "solana-bpf-sdk-install node_modules/@solana/web3.js && npm run clean",
     "clean": "npm run clean:program-rust",
-    "clean:store": "rm -rf store",
     "build": "./src/program-rust/do.sh build && npm run clean:store",
     "clean:program-rust": "./src/program-rust/do.sh clean && rm -rf ./dist && npm run clean:store",
     "test:program-rust": "./src/program-rust/do.sh test",

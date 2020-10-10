@@ -67,10 +67,12 @@ export const deploy = async () => {
   await store.save("deploy.json", { programId: programId.toBase58() });
 };
 
+deploy();
+
 /**
  * Report the state of the game
  */
-export async function reportGameState() {
+/* export async function reportGameState() {
   const accountInfo = await connection.getAccountInfo(gameAccountPubKey);
   if (accountInfo === null) {
     throw "Error: cannot find the game account";
@@ -88,3 +90,4 @@ export async function reportGameState() {
   }
   console.log(string);
 }
+ */
