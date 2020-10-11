@@ -48,45 +48,25 @@ fn process_instruction(
         Command::MakeMove => info!("MakeMoveCommand"),
     };
 
-    /*     let mut game = Game::new();
-
-    game.make_move(ChessMove {
-        from: (5, 2),
-        to: (5, 4),
-        promotion: None,
-    });
-
-    let game_arr = game.to_game_arr();
-
-    let mut data = game_acc.try_borrow_mut_data()?;
-
-    for x in 0..game_arr.len() {
-        data[x] = game_arr[x];
-    } */
-
-    /* let account = next_account_info(accounts_iter)?;
-
-    // The account must be owned by the program in order to modify its data
-    if account.owner != program_id {
-        info!("Greeted account does not have the correct program id");
-        return Err(ProgramError::IncorrectProgramId);
-    }
-
-    // The data must be large enough to hold a u64 count
-    if account.try_data_len()? < mem::size_of::<u32>() {
-        info!("Greeted account data length too small for u32");
-        return Err(ProgramError::InvalidAccountData);
-    } */
-
     Ok(())
 }
 
-fn create_game(game_acc: &AccountInfo, creator_acc: &AccountInfo) -> ProgramResult {
+fn create_game(
+    game_acc: &AccountInfo,
+    creator_acc: &AccountInfo,
+    programId: &Pubkey,
+) -> ProgramResult {
     info!("Received create game command");
     if game_acc.try_data_len()? < mem::size_of::<u8>() * 138 {
         info!("Game account data length too small to hold game state");
         return Err(ProgramError::AccountDataTooSmall);
     }
+
+    if game_acc.owner != programId {
+        info!("Game account is not owned by this program");
+        return Err(ProgramError::IncorrectProgramId);
+    }
+
     let mut data = game_acc.try_borrow_mut_data()?;
     if data[0] != 0 {
         info!("Account has already been used to create game");
