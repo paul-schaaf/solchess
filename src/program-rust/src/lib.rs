@@ -35,16 +35,17 @@ fn process_instruction(
 
     let accounts_iter = &mut accounts.iter();
 
-    let creator_account = next_account_info(accounts_iter)?;
-    assert!(creator_account.is_signer);
+    let player_account = next_account_info(accounts_iter)?;
+    if !player_account.is_signer {
+        info!("Player account needs to sign");
+        return Err(ProgramError::MissingRequiredSignature);
+    }
 
     let game_acc = next_account_info(accounts_iter)?;
-    assert!(game_acc.is_signer);
 
     let command = Command::deserialize_command(instruction_data[0])?;
-
     match command {
-        Command::Create => create_game(&game_acc, &creator_account, program_id)?,
+        Command::Create => create_game(&game_acc, &player_account, program_id)?,
         Command::Join => info!("Join Command"),
         Command::MakeMove => info!("MakeMoveCommand"),
     };
@@ -58,6 +59,12 @@ fn create_game(
     program_id: &Pubkey,
 ) -> ProgramResult {
     info!("Received create game command");
+
+    if !game_acc.is_signer {
+        info!("Game account needs to sign");
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
     if game_acc.try_data_len()? < mem::size_of::<u8>() * 138 {
         info!("Game account data length too small to hold game state");
         return Err(ProgramError::AccountDataTooSmall);
