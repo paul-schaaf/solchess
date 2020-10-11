@@ -12,7 +12,7 @@ import { Store } from "./util/store";
 import { newAccountWithLamports } from "./util/new-account-with-lamports";
 import { Connection } from "@solana/web3.js";
 import { reportGameState } from "./util/report_game_state";
-import {gameAccountDataLayout} from "./util/game-data-layout";
+import { gameAccountDataLayout } from "./util/game-data-layout";
 
 const createGame = async () => {
   const store = new Store();
@@ -70,6 +70,7 @@ const createGame = async () => {
   console.log("Saving game state to store...");
   await store.save("game.json", {
     gameAccountPubkey: gameAccount.publicKey.toBase58(),
+    player_one_secret: payerAccount.secretKey,
   });
 };
 

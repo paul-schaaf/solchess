@@ -6,3 +6,4 @@ possible optimisations/additions:
     - play for crypto, winner gets input
     - improve legal_chess (see its readme)
     - game_arr could be stored in less bytes because you don't need an entire byte to save a piece
+    - when should the game start? when 2nd player joins? or is there maybe a better way?

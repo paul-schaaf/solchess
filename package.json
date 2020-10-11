@@ -10,6 +10,7 @@
     "deploy": "babel-node src/client/deploy.js",
     "create-game": "babel-node src/client/createGame.js",
     "join-game": "babel-node src/client/joinGame.js",
+    "make-move": "babel-node src/client/makeMove.js",
     "clean:deploy": "rm -f store/deploy.json",
     "lint": "npm run pretty && eslint .",
     "lint:fix": "npm run lint -- --fix",

@@ -1,4 +1,4 @@
-import {gameAccountDataLayout} from "./game-data-layout";
+import { gameAccountDataLayout } from "./game-data-layout";
 
 export async function reportGameState(connection, gameAccountPublicKey) {
   const accountInfo = await connection.getAccountInfo(gameAccountPublicKey);

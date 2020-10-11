@@ -11,7 +11,6 @@ import { newAccountWithLamports } from "./util/new-account-with-lamports";
 import { Connection } from "@solana/web3.js";
 import { reportGameState } from "./util/report_game_state";
 
-
 const joinGame = async () => {
   const store = new Store();
 
@@ -58,7 +57,7 @@ const joinGame = async () => {
   } catch (err) {
     console.log(err.message);
   }
-  
+
   const gameArr = await reportGameState(connection, gameAccountPubkey);
   const joiningAccountPubKeyFromGameArr = new PublicKey(gameArr.slice(33, 65));
   console.log(
@@ -66,6 +65,12 @@ const joinGame = async () => {
       joiningAccountPubKeyFromGameArr
     )}`
   );
+
+  console.log("Saving game state to store...");
+  await store.save("game.json", {
+    player_two_secret: payerAccount.secretKey,
+    ...gameConfig,
+  });
 };
 
 joinGame();
