@@ -13,11 +13,10 @@ import { newAccountWithLamports } from "./util/new-account-with-lamports";
 const pathToProgram = "dist/program/solchess.so";
 
 export const deploy = async () => {
-  let deployConfig;
   const store = new Store();
 
   try {
-    deployConfig = await store.load("deploy.json");
+    let deployConfig = await store.load("deploy.json");
     if (!deployConfig.programId) {
       throw new Error(
         "Deployment config file contains JSON data but not the programId"
@@ -29,6 +28,7 @@ export const deploy = async () => {
       return;
     }
   } catch (e) {}
+
   const connection = new Connection(url, "recent");
   const version = await connection.getVersion();
   console.log("Connection to cluster established:", url, version);
@@ -68,26 +68,3 @@ export const deploy = async () => {
 };
 
 deploy();
-
-/**
- * Report the state of the game
- */
-/* export async function reportGameState() {
-  const accountInfo = await connection.getAccountInfo(gameAccountPubKey);
-  if (accountInfo === null) {
-    throw "Error: cannot find the game account";
-  }
-  const info = gameArrDataLayout.decode(Buffer.from(accountInfo.data));
-  let string = "";
-  for (let i = 0; i < info.game_arr.length; i++) {
-    if (i !== info.game_arr.length - 1) {
-      if ((i + 1) % 8 === 0 && i !== 0) {
-        string += info.game_arr[i] + ",\n";
-      } else {
-        string += info.game_arr[i] + ", ";
-      }
-    }
-  }
-  console.log(string);
-}
- */

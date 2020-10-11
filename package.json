@@ -8,6 +8,7 @@
   "testnetDefaultChannel": "v1.3.15",
   "scripts": {
     "deploy": "babel-node src/client/deploy.js",
+    "send-command": "babel-node src/client/command.js",
     "clean:deploy": "rm -f store/deploy.json",
     "lint": "npm run pretty && eslint .",
     "lint:fix": "npm run lint -- --fix",
