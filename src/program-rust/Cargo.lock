@@ -719,9 +719,9 @@ dependencies = [
 
 [[package]]
 name = "legal_chess"
-version = "0.3.1"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f496ecb255178b17eadb5ccb02a7013af120cba7c071b4cb319c69c604e96cd"
+checksum = "2aae96dd615a81a6c4c83a284ced8b8b89f96a0237f57387408cdd23a4cd400e"
 
 [[package]]
 name = "libc"

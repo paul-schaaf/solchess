@@ -74,7 +74,7 @@ fn create_game(
         return Err(ProgramError::Custom(1337));
     }
 
-    data[0] = GameAccState::Created.to_u8().unwrap();
+    data[0] = GameAccState::WaitingForJoin.to_u8().unwrap();
 
     let creator_pubkey = creator_acc.key.to_bytes();
 
