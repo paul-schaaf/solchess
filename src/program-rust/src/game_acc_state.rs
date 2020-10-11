@@ -2,4 +2,6 @@
 pub enum GameAccState {
     Uninitialized,
     WaitingForJoin,
+    Joined,
+    Ongoing,
 }

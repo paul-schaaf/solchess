@@ -11,13 +11,10 @@ import { sendAndConfirmTransaction } from "./util/send-and-confirm-transaction";
 import { Store } from "./util/store";
 import { newAccountWithLamports } from "./util/new-account-with-lamports";
 import { Connection } from "@solana/web3.js";
-import * as BufferLayout from "buffer-layout";
+import { reportGameState } from "./util/report_game_state";
+import {gameAccountDataLayout} from "./util/game-data-layout";
 
-const gameAccountDataLayout = BufferLayout.struct([
-  BufferLayout.seq(BufferLayout.u8(), 138, "game_arr"),
-]);
-
-const sendCommand = async () => {
+const createGame = async () => {
   const store = new Store();
 
   let deployConfig = await store.load("deploy.json");
@@ -62,13 +59,18 @@ const sendCommand = async () => {
     console.log(err.message);
   }
 
-  const gameArr = await reportGameState(connection, gameAccount);
+  const gameArr = await reportGameState(connection, gameAccount.publicKey);
   const creatorAccountPubKeyFromGameArr = new PublicKey(gameArr.slice(1, 33));
   console.log(
     `Creator account has been successfully saved: ${payerAccount.publicKey.equals(
       creatorAccountPubKeyFromGameArr
     )}`
   );
+
+  console.log("Saving game state to store...");
+  await store.save("game.json", {
+    gameAccountPubkey: gameAccount.publicKey.toBase58(),
+  });
 };
 
 const createGameAccount = async (payerAccount, connection, programId) => {
@@ -98,32 +100,4 @@ const createGameAccount = async (payerAccount, connection, programId) => {
   return gameAccount;
 };
 
-async function reportGameState(connection, gameAccount) {
-  const accountInfo = await connection.getAccountInfo(gameAccount.publicKey);
-  if (accountInfo === null) {
-    throw "Error: cannot find the game account";
-  }
-  const info = gameAccountDataLayout.decode(Buffer.from(accountInfo.data));
-
-  let gameState = info.game_arr[0];
-  console.log(`Game State: ${gameState}`);
-
-  let gameArr = info.game_arr.slice(1);
-
-  let string = "";
-  for (let i = 0; i < gameArr.length; i++) {
-    if (i !== gameArr.length - 1) {
-      if ((i + 1) % 8 === 0 && i !== 0) {
-        string += gameArr[i] + ",\n";
-      } else {
-        string += gameArr[i] + ", ";
-      }
-    } else {
-      string += gameArr[i];
-    }
-  }
-  console.log(string);
-  return info.game_arr;
-}
-
-sendCommand();
+createGame();

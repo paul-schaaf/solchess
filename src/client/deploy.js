@@ -64,6 +64,7 @@ export const deploy = async () => {
   );
   let programId = programAccount.publicKey;
   console.log("Program loaded to account", programId.toBase58());
+  console.log("Saving programId to store...");
   await store.save("deploy.json", { programId: programId.toBase58() });
 };
 

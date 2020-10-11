@@ -43,26 +43,9 @@ fn process_instruction(
 
     let game_acc = next_account_info(accounts_iter)?;
 
-    let command = Command::deserialize_command(instruction_data[0])?;
-    match command {
-        Command::Create => create_game(&game_acc, &player_account, program_id)?,
-        Command::Join => info!("Join Command"),
-        Command::MakeMove => info!("MakeMoveCommand"),
-    };
-
-    Ok(())
-}
-
-fn create_game(
-    game_acc: &AccountInfo,
-    creator_acc: &AccountInfo,
-    program_id: &Pubkey,
-) -> ProgramResult {
-    info!("Received create game command");
-
-    if !game_acc.is_signer {
-        info!("Game account needs to sign");
-        return Err(ProgramError::MissingRequiredSignature);
+    if game_acc.owner != program_id {
+        info!("Game account is not owned by this program");
+        return Err(ProgramError::IncorrectProgramId);
     }
 
     if game_acc.try_data_len()? < mem::size_of::<u8>() * 138 {
@@ -70,9 +53,22 @@ fn create_game(
         return Err(ProgramError::AccountDataTooSmall);
     }
 
-    if game_acc.owner != program_id {
-        info!("Game account is not owned by this program");
-        return Err(ProgramError::IncorrectProgramId);
+    let command = Command::deserialize_command(instruction_data[0])?;
+    match command {
+        Command::Create => create_game(&game_acc, &player_account)?,
+        Command::Join => join_command(&game_acc, &player_account)?,
+        Command::MakeMove => info!("MakeMoveCommand"),
+    };
+
+    Ok(())
+}
+
+fn create_game(game_acc: &AccountInfo, creator_acc: &AccountInfo) -> ProgramResult {
+    info!("Received create game command");
+
+    if !game_acc.is_signer {
+        info!("Game account needs to sign");
+        return Err(ProgramError::MissingRequiredSignature);
     }
 
     let mut data = game_acc.try_borrow_mut_data()?;
@@ -85,15 +81,33 @@ fn create_game(
 
     let creator_pubkey = creator_acc.key.to_bytes();
 
-    for x in 1..creator_pubkey.len() + 1 {
+    for x in 1..33 {
         data[x] = creator_pubkey[x - 1];
     }
 
     let game = Game::new();
     let game_arr = game.to_game_arr();
 
-    for x in 65..game_arr.len() + 65 {
+    for x in 65..138 {
         data[x] = game_arr[x - 65];
+    }
+
+    Ok(())
+}
+
+fn join_command(game_acc: &AccountInfo, joining_acc: &AccountInfo) -> ProgramResult {
+    let mut data = game_acc.try_borrow_mut_data()?;
+    if data[0] != GameAccState::WaitingForJoin.to_u8().unwrap() {
+        info!("Game account is not waiting for someone to join");
+        return Err(ProgramError::Custom(1337));
+    }
+
+    data[0] = GameAccState::Joined.to_u8().unwrap();
+
+    let joining_player_pubkey = joining_acc.key.to_bytes();
+
+    for x in 33..65 {
+        data[x] = joining_player_pubkey[x - 33];
     }
 
     Ok(())
