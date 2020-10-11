@@ -69,7 +69,7 @@ fn create_game(
     }
 
     let mut data = game_acc.try_borrow_mut_data()?;
-    if data[0] != 0 {
+    if data[0] != GameAccState::Uninitialized.to_u8().unwrap() {
         info!("Account has already been used to create game");
         return Err(ProgramError::Custom(1337));
     }
