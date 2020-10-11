@@ -2,12 +2,13 @@
 
 #[macro_use]
 extern crate num_derive;
-use num_traits::FromPrimitive;
+use num_traits::ToPrimitive;
 
 mod command;
 mod game_acc_state;
 
 use command::Command;
+use game_acc_state::GameAccState;
 
 use solana_sdk::{
     account_info::{next_account_info, AccountInfo},
@@ -19,7 +20,7 @@ use solana_sdk::{
 };
 use std::mem;
 
-use legal_chess::{chessmove::ChessMove, game::Game};
+use legal_chess::game::Game;
 
 // Declare and export the program's entrypoint
 entrypoint_deprecated!(process_instruction);
@@ -43,7 +44,7 @@ fn process_instruction(
     let command = Command::deserialize_command(instruction_data[0])?;
 
     match command {
-        Command::Create => create_game(&game_acc, &creator_account)?,
+        Command::Create => create_game(&game_acc, &creator_account, program_id)?,
         Command::Join => info!("Join Command"),
         Command::MakeMove => info!("MakeMoveCommand"),
     };
@@ -54,7 +55,7 @@ fn process_instruction(
 fn create_game(
     game_acc: &AccountInfo,
     creator_acc: &AccountInfo,
-    programId: &Pubkey,
+    program_id: &Pubkey,
 ) -> ProgramResult {
     info!("Received create game command");
     if game_acc.try_data_len()? < mem::size_of::<u8>() * 138 {
@@ -62,7 +63,7 @@ fn create_game(
         return Err(ProgramError::AccountDataTooSmall);
     }
 
-    if game_acc.owner != programId {
+    if game_acc.owner != program_id {
         info!("Game account is not owned by this program");
         return Err(ProgramError::IncorrectProgramId);
     }
@@ -73,7 +74,7 @@ fn create_game(
         return Err(ProgramError::Custom(1337));
     }
 
-    data[0] = 1;
+    data[0] = GameAccState::Created.to_u8().unwrap();
 
     let creator_pubkey = creator_acc.key.to_bytes();
 
