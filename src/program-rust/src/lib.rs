@@ -2,16 +2,18 @@
 
 #[macro_use]
 extern crate num_derive;
-use num_traits::ToPrimitive;
 use num_traits::FromPrimitive;
+use num_traits::ToPrimitive;
 
+mod allocator;
+mod color;
 mod command;
 mod game_acc_state;
-mod color;
 
+use allocator::BumpAllocator;
+use color::Color;
 use command::Command;
 use game_acc_state::GameAccState;
-use color::Color;
 
 use solana_sdk::{
     account_info::{next_account_info, AccountInfo},
@@ -23,7 +25,10 @@ use solana_sdk::{
 };
 use std::mem;
 
-use legal_chess::{game::Game, chessmove::ChessMove};
+use legal_chess::{chessmove::ChessMove, game::Game};
+
+#[global_allocator]
+static A: BumpAllocator = BumpAllocator;
 
 // Declare and export the program's entrypoint
 entrypoint_deprecated!(process_instruction);
@@ -116,7 +121,11 @@ fn join_game(game_acc: &AccountInfo, joining_acc: &AccountInfo) -> ProgramResult
     Ok(())
 }
 
-fn make_move(game_acc: &AccountInfo, player_acc: &AccountInfo, instruction_data: &[u8]) -> ProgramResult{
+fn make_move(
+    game_acc: &AccountInfo,
+    player_acc: &AccountInfo,
+    instruction_data: &[u8],
+) -> ProgramResult {
     let mut data = game_acc.try_borrow_mut_data()?;
     if data[0] != GameAccState::Ongoing.to_number() {
         info!("Game is not ongoing");
@@ -126,7 +135,7 @@ fn make_move(game_acc: &AccountInfo, player_acc: &AccountInfo, instruction_data:
     let side_to_move = Color::from_u8(data[137]).unwrap();
     let expected_player_account = match side_to_move {
         Color::White => Pubkey::new(&data[1..33]),
-        Color::Black => Pubkey::new(&data[33..65])
+        Color::Black => Pubkey::new(&data[33..65]),
     };
     if player_acc.key != &expected_player_account {
         info!("Not this player's turn");
@@ -138,7 +147,7 @@ fn make_move(game_acc: &AccountInfo, player_acc: &AccountInfo, instruction_data:
     game.make_move(ChessMove {
         from: (instruction_data[1], instruction_data[2]),
         to: (instruction_data[3], instruction_data[4]),
-        promotion: None
+        promotion: None,
     });
 
     if game.legal_moves().len() == 0 {

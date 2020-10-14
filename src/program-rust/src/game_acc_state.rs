@@ -5,11 +5,11 @@ pub enum GameAccState {
     Uninitialized,
     WaitingForJoin,
     Ongoing,
-    Over
+    Over,
 }
 
-impl GameAccState { 
-    pub fn to_number(&self) -> u8{
+impl GameAccState {
+    pub fn to_number(&self) -> u8 {
         self.to_u8().unwrap()
     }
 }
