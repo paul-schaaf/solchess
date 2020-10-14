@@ -13,8 +13,9 @@ edition = "2018"
 
 [features]
 no-entrypoint = []
+custom-heap = []
 skip-no-mangle = ["solana-sdk/skip-no-mangle"]
-program = ["solana-sdk/program"]
+program = ["custom-heap", "solana-sdk/program"]
 default = ["solana-sdk/default"]
 
 [dependencies]
